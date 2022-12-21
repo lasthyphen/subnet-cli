@@ -223,7 +223,7 @@ var _ = ginkgo.Describe("[CreateSubnet/CreateBlockchain]", func() {
 				nodeID,
 				time.Now().Add(30*time.Second),
 				time.Now().Add(5*24*time.Hour),
-				client.WithStakeAmount(2*units.KiloAvax),
+				client.WithStakeAmount(2*units.KiloDjtx),
 				// ref. "genesis/genesis_local.go".
 				client.WithRewardShares(30000), // 3%
 			)

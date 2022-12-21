@@ -11,7 +11,7 @@ import (
 
 	"github.com/lasthyphen/dijetsnodego/ids"
 	"github.com/lasthyphen/dijetsnodego/utils/constants"
-	"github.com/lasthyphen/dijetsnodego/vms/components/avax"
+	"github.com/lasthyphen/dijetsnodego/vms/components/djtx"
 	"github.com/lasthyphen/dijetsnodego/vms/platformvm/txs"
 	"github.com/lasthyphen/dijetsnodego/vms/secp256k1fx"
 )
@@ -35,9 +35,9 @@ type Key interface {
 	// If target amount is specified, it only uses the
 	// outputs until the total spending is below the target
 	// amount.
-	Spends(outputs []*avax.UTXO, opts ...OpOption) (
+	Spends(outputs []*djtx.UTXO, opts ...OpOption) (
 		totalBalanceToSpend uint64,
-		inputs []*avax.TransferableInput,
+		inputs []*djtx.TransferableInput,
 		signers [][]ids.ShortID,
 	)
 	// Sign generates [numSigs] signatures and attaches them to [pTx].
@@ -71,7 +71,7 @@ func WithTargetAmount(ta uint64) OpOption {
 }
 
 // To deduct transfer fee from total spend (output).
-// e.g., "units.MilliAvax" for X/P-Chain transfer.
+// e.g., "units.MilliDjtx" for X/P-Chain transfer.
 func WithFeeDeduct(fee uint64) OpOption {
 	return func(op *Op) {
 		op.feeDeduct = fee
@@ -92,7 +92,7 @@ func getHRP(networkID uint32) string {
 }
 
 type innerSortTransferableInputsWithSigners struct {
-	ins     []*avax.TransferableInput
+	ins     []*djtx.TransferableInput
 	signers [][]ids.ShortID
 }
 
@@ -118,7 +118,7 @@ func (ins *innerSortTransferableInputsWithSigners) Swap(i, j int) {
 // SortTransferableInputsWithSigners sorts the inputs and signers based on the
 // input's utxo ID.
 //
-// This is based off of (generics?): https://github.com/lasthyphen/dijetsnodego/blob/224c9fd23d41839201dd0275ac864a845de6e93e/vms/components/avax/transferables.go#L202
-func SortTransferableInputsWithSigners(ins []*avax.TransferableInput, signers [][]ids.ShortID) {
+// This is based off of (generics?): https://github.com/lasthyphen/dijetsnodego/blob/224c9fd23d41839201dd0275ac864a845de6e93e/vms/components/djtx/transferables.go#L202
+func SortTransferableInputsWithSigners(ins []*djtx.TransferableInput, signers [][]ids.ShortID) {
 	sort.Sort(&innerSortTransferableInputsWithSigners{ins: ins, signers: signers})
 }

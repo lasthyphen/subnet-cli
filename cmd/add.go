@@ -22,7 +22,7 @@ func AddCommand() *cobra.Command {
 		newAddValidatorCommand(),
 		newAddSubnetValidatorCommand(),
 	)
-	cmd.PersistentFlags().StringVar(&publicURI, "public-uri", "https://api.avax-test.network", "URI for avalanche network endpoints")
+	cmd.PersistentFlags().StringVar(&publicURI, "public-uri", "https://api.djtx-test.network", "URI for avalanche network endpoints")
 	cmd.PersistentFlags().StringVar(&privKeyPath, "private-key-path", ".subnet-cli.pk", "private key file path")
 	cmd.PersistentFlags().BoolVarP(&useLedger, "ledger", "l", false, "use ledger to sign transactions")
 	return cmd
