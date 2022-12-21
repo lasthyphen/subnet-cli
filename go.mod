@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/lasthyphen/djiets-ledger-go v0.0.16
-	github.com/lasthyphen/dijetsnode-go-runner v0.0.1
+	github.com/lasthyphen/dijetsnode-go-runner v0.0.2
 	github.com/lasthyphen/dijetsnodego v1.8.11
 	github.com/dustin/go-humanize v1.0.0
 	github.com/manifoldco/promptui v0.9.0

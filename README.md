@@ -1,6 +1,6 @@
 # subnet-cli
 
-A command-line interface to manage [Avalanche Subnets](https://docs.avax.network/subnets/).
+A command-line interface to manage [Avalanche Subnets](https://docs.djtx.network/subnets/).
 
 ## Install
 
@@ -87,7 +87,7 @@ subnet-cli wizard \
 ```
 
 _Make sure you've downloaded the latest version of the
-[Avalanche Ledger App](https://docs.avax.network/learn/setup-your-ledger-nano-s-with-avalanche)!_
+[Avalanche Ledger App](https://docs.djtx.network/learn/setup-your-ledger-nano-s-with-avalanche)!_
 
 ### `subnet-cli create VMID`
 
@@ -110,9 +110,9 @@ rest of this walkthrough.
 
 The easiest way to do this (**for testing only**) is:
 
-1) Import your private key (`.subnet-cli.pk`) into the [web wallet](https://wallet.avax.network)
-2) Request funds from the [faucet](https://faucet.avax-test.network)
-3) Move the test funds (sent on either the X or C-Chain) to the P-Chain [(Tutorial)](https://docs.avax.network/build/tutorials/platform/transfer-avax-between-x-chain-and-p-chain/)
+1) Import your private key (`.subnet-cli.pk`) into the [web wallet](https://wallet.djtx.network)
+2) Request funds from the [faucet](https://faucet.djtx-test.network)
+3) Move the test funds (sent on either the X or C-Chain) to the P-Chain [(Tutorial)](https://docs.djtx.network/build/tutorials/platform/transfer-djtx-between-x-chain-and-p-chain/)
 
 After following these 3 steps, your test key should now have a balance on the
 P-Chain.
@@ -162,7 +162,7 @@ subnet-cli create subnet \
 ```bash
 subnet-cli add validator \
 --node-ids="[YOUR-NODE-ID]" \
---stake-amount=[STAKE-AMOUNT-IN-NANO-AVAX] \
+--stake-amount=[STAKE-AMOUNT-IN-NANO-DJTX] \
 --validate-reward-fee-percent=2
 ```
 

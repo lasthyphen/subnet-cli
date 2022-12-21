@@ -127,15 +127,15 @@ func CreateLogger() error {
 
 func (i *Info) CheckBalance() error {
 	if i.balance < i.requiredBalance {
-		color.Outf("{{red}}insufficient funds to perform operation. get more at https://faucet.avax-test.network{{/}}\n")
+		color.Outf("{{red}}insufficient funds to perform operation. get more at https://faucet.djtx-test.network{{/}}\n")
 		return fmt.Errorf("%w: on %s (expected=%d, have=%d)", ErrInsufficientFunds, i.key.P(), i.requiredBalance, i.balance)
 	}
 	return nil
 }
 
 func BaseTableSetup(i *Info) (*bytes.Buffer, *tablewriter.Table) {
-	// P-Chain balance is denominated by units.Avax or 10^9 nano-Avax
-	curPChainDenominatedP := float64(i.balance) / float64(units.Avax)
+	// P-Chain balance is denominated by units.Djtx or 10^9 nano-Djtx
+	curPChainDenominatedP := float64(i.balance) / float64(units.Djtx)
 	curPChainDenominatedBalanceP := humanize.FormatFloat("#,###.#######", curPChainDenominatedP)
 
 	buf := bytes.NewBuffer(nil)
@@ -149,26 +149,26 @@ func BaseTableSetup(i *Info) (*bytes.Buffer, *tablewriter.Table) {
 	tb.SetAlignment(tablewriter.ALIGN_LEFT)
 
 	tb.Append([]string{formatter.F("{{cyan}}{{bold}}PRIMARY P-CHAIN ADDRESS{{/}}"), formatter.F("{{light-gray}}{{bold}}%s{{/}}", i.key.P()[0])})
-	tb.Append([]string{formatter.F("{{coral}}{{bold}}TOTAL P-CHAIN BALANCE{{/}} "), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $AVAX", curPChainDenominatedBalanceP)})
+	tb.Append([]string{formatter.F("{{coral}}{{bold}}TOTAL P-CHAIN BALANCE{{/}} "), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $DJTX", curPChainDenominatedBalanceP)})
 	if i.txFee > 0 {
-		txFee := float64(i.txFee) / float64(units.Avax)
+		txFee := float64(i.txFee) / float64(units.Djtx)
 		txFees := humanize.FormatFloat("#,###.###", txFee)
-		tb.Append([]string{formatter.F("{{red}}{{bold}}TX FEE{{/}}"), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $AVAX", txFees)})
+		tb.Append([]string{formatter.F("{{red}}{{bold}}TX FEE{{/}}"), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $DJTX", txFees)})
 	}
 	if i.stakeAmount > 0 {
-		stakeAmount := float64(i.stakeAmount) / float64(units.Avax)
+		stakeAmount := float64(i.stakeAmount) / float64(units.Djtx)
 		stakeAmounts := humanize.FormatFloat("#,###.###", stakeAmount)
-		tb.Append([]string{formatter.F("{{red}}{{bold}}EACH STAKE AMOUNT{{/}}"), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $AVAX", stakeAmounts)})
+		tb.Append([]string{formatter.F("{{red}}{{bold}}EACH STAKE AMOUNT{{/}}"), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $DJTX", stakeAmounts)})
 	}
 	if i.totalStakeAmount > 0 {
-		totalStakeAmount := float64(i.totalStakeAmount) / float64(units.Avax)
+		totalStakeAmount := float64(i.totalStakeAmount) / float64(units.Djtx)
 		totalStakeAmounts := humanize.FormatFloat("#,###.###", totalStakeAmount)
-		tb.Append([]string{formatter.F("{{red}}{{bold}}TOTAL STAKE AMOUNT{{/}}"), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $AVAX", totalStakeAmounts)})
+		tb.Append([]string{formatter.F("{{red}}{{bold}}TOTAL STAKE AMOUNT{{/}}"), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $DJTX", totalStakeAmounts)})
 	}
 	if i.requiredBalance > 0 {
-		requiredBalance := float64(i.requiredBalance) / float64(units.Avax)
+		requiredBalance := float64(i.requiredBalance) / float64(units.Djtx)
 		requiredBalances := humanize.FormatFloat("#,###.###", requiredBalance)
-		tb.Append([]string{formatter.F("{{red}}{{bold}}REQUIRED BALANCE{{/}}"), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $AVAX", requiredBalances)})
+		tb.Append([]string{formatter.F("{{red}}{{bold}}REQUIRED BALANCE{{/}}"), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $DJTX", requiredBalances)})
 	}
 
 	tb.Append([]string{formatter.F("{{orange}}URI{{/}}"), formatter.F("{{light-gray}}{{bold}}%s{{/}}", i.uri)})

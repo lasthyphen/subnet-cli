@@ -15,7 +15,7 @@ import (
 	"github.com/lasthyphen/dijetsnodego/utils/constants"
 	"github.com/lasthyphen/dijetsnodego/utils/math"
 	"github.com/lasthyphen/dijetsnodego/utils/units"
-	"github.com/lasthyphen/dijetsnodego/vms/components/avax"
+	"github.com/lasthyphen/dijetsnodego/vms/components/djtx"
 	"github.com/lasthyphen/dijetsnodego/vms/components/verify"
 	"github.com/lasthyphen/dijetsnodego/vms/platformvm"
 	"github.com/lasthyphen/dijetsnodego/vms/platformvm/stakeable"
@@ -23,7 +23,7 @@ import (
 	"github.com/lasthyphen/dijetsnodego/vms/platformvm/txs"
 	"github.com/lasthyphen/dijetsnodego/vms/platformvm/validator"
 	"github.com/lasthyphen/dijetsnodego/vms/secp256k1fx"
-	internal_avax "github.com/lasthyphen/subnet-cli/internal/avax"
+	internal_djtx "github.com/lasthyphen/subnet-cli/internal/djtx"
 	"github.com/lasthyphen/subnet-cli/internal/key"
 	internal_platformvm "github.com/lasthyphen/subnet-cli/internal/platformvm"
 	"go.uber.org/zap"
@@ -140,7 +140,7 @@ func (pc *p) CreateSubnet(
 	}
 
 	utx := &txs.CreateSubnetTx{
-		BaseTx: txs.BaseTx{BaseTx: avax.BaseTx{
+		BaseTx: txs.BaseTx{BaseTx: djtx.BaseTx{
 			NetworkID:    pc.networkID,
 			BlockchainID: pc.pChainID,
 			Ins:          ins,
@@ -282,7 +282,7 @@ func (pc *p) AddSubnetValidator(
 	signers = append(signers, subnetSigners)
 
 	utx := &txs.AddSubnetValidatorTx{
-		BaseTx: txs.BaseTx{BaseTx: avax.BaseTx{
+		BaseTx: txs.BaseTx{BaseTx: djtx.BaseTx{
 			NetworkID:    pc.networkID,
 			BlockchainID: pc.pChainID,
 			Ins:          ins,
@@ -342,15 +342,15 @@ func (pc *p) AddValidator(
 		return 0, err
 	}
 
-	// ref. https://docs.avax.network/learn/platform-overview/staking/#staking-parameters-on-avalanche
-	// ref. https://docs.avax.network/learn/platform-overview/staking/#validating-in-fuji
+	// ref. https://docs.djtx.network/learn/platform-overview/staking/#staking-parameters-on-avalanche
+	// ref. https://docs.djtx.network/learn/platform-overview/staking/#validating-in-fuji
 	if ret.stakeAmt == 0 {
 		switch pc.networkName {
 		case constants.MainnetName:
-			ret.stakeAmt = 2000 * units.Avax
+			ret.stakeAmt = 2000 * units.Djtx
 		case constants.LocalName,
 			constants.FujiName:
-			ret.stakeAmt = 1 * units.Avax
+			ret.stakeAmt = 1 * units.Djtx
 		}
 		zap.L().Info("stake amount not set, default to network setting",
 			zap.String("networkName", pc.networkName),
@@ -378,7 +378,7 @@ func (pc *p) AddValidator(
 		zap.String("changeAddress", ret.changeAddr.String()),
 	)
 
-	// ref. https://docs.avax.network/learn/platform-overview/transaction-fees/#fee-schedule
+	// ref. https://docs.djtx.network/learn/platform-overview/transaction-fees/#fee-schedule
 	addStakerTxFee := uint64(0)
 
 	ins, returnedOuts, stakedOuts, signers, err := pc.stake(
@@ -395,7 +395,7 @@ func (pc *p) AddValidator(
 	}
 
 	utx := &txs.AddValidatorTx{
-		BaseTx: txs.BaseTx{BaseTx: avax.BaseTx{
+		BaseTx: txs.BaseTx{BaseTx: djtx.BaseTx{
 			NetworkID:    pc.networkID,
 			BlockchainID: pc.pChainID,
 			Ins:          ins,
@@ -424,7 +424,7 @@ func (pc *p) AddValidator(
 	if err := utx.SyntacticVerify(&snow.Context{
 		NetworkID:   pc.networkID,
 		ChainID:     pc.pChainID,
-		AVAXAssetID: pc.assetID,
+		DJTXAssetID: pc.assetID,
 	}); err != nil {
 		return 0, err
 	}
@@ -480,7 +480,7 @@ func (pc *p) CreateBlockchain(
 	signers = append(signers, subnetSigners)
 
 	utx := &txs.CreateChainTx{
-		BaseTx: txs.BaseTx{BaseTx: avax.BaseTx{
+		BaseTx: txs.BaseTx{BaseTx: djtx.BaseTx{
 			NetworkID:    pc.networkID,
 			BlockchainID: pc.pChainID,
 			Ins:          ins,
@@ -581,9 +581,9 @@ func WithPoll(b bool) OpOption {
 
 // ref. "platformvm.VM.stake".
 func (pc *p) stake(ctx context.Context, k key.Key, fee uint64, opts ...OpOption) (
-	ins []*avax.TransferableInput,
-	returnedOuts []*avax.TransferableOutput,
-	stakedOuts []*avax.TransferableOutput,
+	ins []*djtx.TransferableInput,
+	returnedOuts []*djtx.TransferableOutput,
+	stakedOuts []*djtx.TransferableOutput,
 	signers [][]ids.ShortID,
 	err error,
 ) {
@@ -603,27 +603,27 @@ func (pc *p) stake(ctx context.Context, k key.Key, fee uint64, opts ...OpOption)
 
 	now := uint64(time.Now().Unix())
 
-	ins = make([]*avax.TransferableInput, 0)
-	returnedOuts = make([]*avax.TransferableOutput, 0)
-	stakedOuts = make([]*avax.TransferableOutput, 0)
+	ins = make([]*djtx.TransferableInput, 0)
+	returnedOuts = make([]*djtx.TransferableOutput, 0)
+	stakedOuts = make([]*djtx.TransferableOutput, 0)
 
-	utxos := make([]*avax.UTXO, len(ubs))
+	utxos := make([]*djtx.UTXO, len(ubs))
 	for i, ub := range ubs {
-		utxos[i], err = internal_avax.ParseUTXO(ub, txs.Codec)
+		utxos[i], err = internal_djtx.ParseUTXO(ub, txs.Codec)
 		if err != nil {
 			return nil, nil, nil, nil, err
 		}
 	}
 
-	// amount of AVAX that has been staked
+	// amount of DJTX that has been staked
 	amountStaked := uint64(0)
 	for _, utxo := range utxos {
-		// have staked more AVAX then we need to
-		// no need to consume more AVAX
+		// have staked more DJTX then we need to
+		// no need to consume more DJTX
 		if amountStaked >= ret.stakeAmt {
 			break
 		}
-		// assume "AssetID" is set to "AVAX" asset ID
+		// assume "AssetID" is set to "DJTX" asset ID
 		if utxo.AssetID() != pc.assetID {
 			continue
 		}
@@ -646,7 +646,7 @@ func (pc *p) stake(ctx context.Context, k key.Key, fee uint64, opts ...OpOption)
 			continue
 		}
 
-		_, inputs, inputSigners := k.Spends([]*avax.UTXO{utxo}, key.WithTime(now))
+		_, inputs, inputSigners := k.Spends([]*djtx.UTXO{utxo}, key.WithTime(now))
 		if len(inputs) == 0 {
 			// cannot spend this UTXO, skip to try next one
 			continue
@@ -665,8 +665,8 @@ func (pc *p) stake(ctx context.Context, k key.Key, fee uint64, opts ...OpOption)
 		remainingValue -= amountToStake
 
 		// Add the output to the staked outputs
-		stakedOuts = append(stakedOuts, &avax.TransferableOutput{
-			Asset: avax.Asset{ID: pc.assetID},
+		stakedOuts = append(stakedOuts, &djtx.TransferableOutput{
+			Asset: djtx.Asset{ID: pc.assetID},
 			Out: &stakeable.LockOut{
 				Locktime: out.Locktime,
 				TransferableOut: &secp256k1fx.TransferOutput{
@@ -678,8 +678,8 @@ func (pc *p) stake(ctx context.Context, k key.Key, fee uint64, opts ...OpOption)
 
 		if remainingValue > 0 {
 			// input had extra value, so some of it must be returned
-			returnedOuts = append(returnedOuts, &avax.TransferableOutput{
-				Asset: avax.Asset{ID: pc.assetID},
+			returnedOuts = append(returnedOuts, &djtx.TransferableOutput{
+				Asset: djtx.Asset{ID: pc.assetID},
 				Out: &secp256k1fx.TransferOutput{
 					Amt: remainingValue,
 					OutputOwners: secp256k1fx.OutputOwners{
@@ -698,16 +698,16 @@ func (pc *p) stake(ctx context.Context, k key.Key, fee uint64, opts ...OpOption)
 		signers = append(signers, inputSigners...)
 	}
 
-	// amount of AVAX that has been burned
+	// amount of DJTX that has been burned
 	amountBurned := uint64(0)
 	for _, utxo := range utxos {
-		// have staked more AVAX then we need to
-		// have burned more AVAX then we need to
-		// no need to consume more AVAX
+		// have staked more DJTX then we need to
+		// have burned more DJTX then we need to
+		// no need to consume more DJTX
 		if amountStaked >= ret.stakeAmt && amountBurned >= fee {
 			break
 		}
-		// assume "AssetID" is set to "AVAX" asset ID
+		// assume "AssetID" is set to "DJTX" asset ID
 		if utxo.AssetID() != pc.assetID {
 			continue
 		}
@@ -722,7 +722,7 @@ func (pc *p) stake(ctx context.Context, k key.Key, fee uint64, opts ...OpOption)
 			}
 			utxo.Out = inner.TransferableOut
 		}
-		_, inputs, inputSigners := k.Spends([]*avax.UTXO{utxo}, key.WithTime(now))
+		_, inputs, inputSigners := k.Spends([]*djtx.UTXO{utxo}, key.WithTime(now))
 		if len(inputs) == 0 {
 			// cannot spend this UTXO, skip to try next one
 			continue
@@ -750,8 +750,8 @@ func (pc *p) stake(ctx context.Context, k key.Key, fee uint64, opts ...OpOption)
 
 		if amountToStake > 0 {
 			// Some of this input was put for staking
-			stakedOuts = append(stakedOuts, &avax.TransferableOutput{
-				Asset: avax.Asset{ID: pc.assetID},
+			stakedOuts = append(stakedOuts, &djtx.TransferableOutput{
+				Asset: djtx.Asset{ID: pc.assetID},
 				Out: &secp256k1fx.TransferOutput{
 					Amt: amountToStake,
 					OutputOwners: secp256k1fx.OutputOwners{
@@ -765,8 +765,8 @@ func (pc *p) stake(ctx context.Context, k key.Key, fee uint64, opts ...OpOption)
 
 		if remainingValue > 0 {
 			// input had extra value, so some of it must be returned
-			returnedOuts = append(returnedOuts, &avax.TransferableOutput{
-				Asset: avax.Asset{ID: pc.assetID},
+			returnedOuts = append(returnedOuts, &djtx.TransferableOutput{
+				Asset: djtx.Asset{ID: pc.assetID},
 				Out: &secp256k1fx.TransferOutput{
 					Amt: remainingValue,
 					OutputOwners: secp256k1fx.OutputOwners{
@@ -793,8 +793,8 @@ func (pc *p) stake(ctx context.Context, k key.Key, fee uint64, opts ...OpOption)
 	}
 
 	key.SortTransferableInputsWithSigners(ins, signers)   // sort inputs
-	avax.SortTransferableOutputs(returnedOuts, txs.Codec) // sort outputs
-	avax.SortTransferableOutputs(stakedOuts, txs.Codec)   // sort outputs
+	djtx.SortTransferableOutputs(returnedOuts, txs.Codec) // sort outputs
+	djtx.SortTransferableOutputs(stakedOuts, txs.Codec)   // sort outputs
 
 	return ins, returnedOuts, stakedOuts, signers, nil
 }
