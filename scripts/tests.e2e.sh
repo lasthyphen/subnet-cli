@@ -47,15 +47,6 @@ find /tmp/avalanchego-v${VERSION}
 # download avalanche-network-runner
 # https://github.com/lasthyphen/dijetsnode-go-runner
 # TODO: migrate to upstream avalanche-network-runner
-NETWORK_RUNNER_VERSION=0.0.4
-DOWNLOAD_PATH=/tmp/avalanche-network-runner.tar.gz
-DOWNLOAD_URL=https://github.com/lasthyphen/djtx-tester/releases/download/v${NETWORK_RUNNER_VERSION}/djtx-tester_${NETWORK_RUNNER_VERSION}_linux_amd64.tar.gz
-if [[ ${GOOS} == "darwin" ]]; then
-  DOWNLOAD_URL=https://github.com/lasthyphen/djtx-tester/releases/download/v${NETWORK_RUNNER_VERSION}/djtx-tester_${NETWORK_RUNNER_VERSION}_darwin_amd64.tar.gz
-fi
-
-rm -f /tmp/avalanche-network-runner
-rm -f ${DOWNLOAD_PATH}
 
 echo "downloading avalanche-network-runner ${NETWORK_RUNNER_VERSION} at ${DOWNLOAD_URL}"
 curl -L ${DOWNLOAD_URL} -o ${DOWNLOAD_PATH}

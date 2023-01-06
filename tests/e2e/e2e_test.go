@@ -17,7 +17,6 @@ import (
 	"github.com/lasthyphen/subnet-cli/internal/key"
 	"github.com/lasthyphen/subnet-cli/pkg/color"
 	"github.com/lasthyphen/subnet-cli/pkg/logutil"
-	runner_client "github.com/lasthyphen/djtx-tester/client"
 	ginkgo "github.com/onsi/ginkgo/v2"
 	"github.com/onsi/gomega"
 )
