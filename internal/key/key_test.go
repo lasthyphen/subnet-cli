@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/lasthyphen/dijetsnodego/utils/cb58"
 	"github.com/lasthyphen/dijetsnodego/utils/crypto"
+	"github.com/lasthyphen/dijetsnodego/utils/formatting"
 )
 
 const (
@@ -51,7 +51,7 @@ func TestNewKeyEwoq(t *testing.T) {
 func TestNewKey(t *testing.T) {
 	t.Parallel()
 
-	skBytes, err := cb58.Decode(rawEwoqPk)
+	skBytes, err := formatting.Decode(formatting.CB58, rawEwoqPk)
 	if err != nil {
 		t.Fatal(err)
 	}

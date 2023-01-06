@@ -12,7 +12,7 @@ import (
 	"github.com/lasthyphen/dijetsnodego/ids"
 	"github.com/lasthyphen/dijetsnodego/utils/constants"
 	"github.com/lasthyphen/dijetsnodego/vms/components/djtx"
-	"github.com/lasthyphen/dijetsnodego/vms/platformvm/txs"
+	"github.com/lasthyphen/dijetsnodego/vms/platformvm"
 	"github.com/lasthyphen/dijetsnodego/vms/secp256k1fx"
 )
 
@@ -41,7 +41,7 @@ type Key interface {
 		signers [][]ids.ShortID,
 	)
 	// Sign generates [numSigs] signatures and attaches them to [pTx].
-	Sign(pTx *txs.Tx, signers [][]ids.ShortID) error
+	Sign(pTx *platformvm.Tx, signers [][]ids.ShortID) error
 }
 
 type Op struct {
@@ -82,8 +82,8 @@ func getHRP(networkID uint32) string {
 	switch networkID {
 	case constants.LocalID:
 		return constants.LocalHRP
-	case constants.FujiID:
-		return constants.FujiHRP
+	case constants.TahoeID:
+		return constants.TahoeHRP
 	case constants.MainnetID:
 		return constants.MainnetHRP
 	default:

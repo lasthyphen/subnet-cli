@@ -6,6 +6,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	"github.com/lasthyphen/dijetsnodego/ids"
@@ -55,7 +56,7 @@ func createBlockchainFunc(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	vmGenesisBytes, err := os.ReadFile(vmGenesisPath)
+	vmGenesisBytes, err := ioutil.ReadFile(vmGenesisPath)
 	if err != nil {
 		return err
 	}

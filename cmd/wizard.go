@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"time"
 
@@ -30,11 +31,7 @@ func WizardCommand() *cobra.Command {
 	}
 
 	// "create subnet"
-<<<<<<< HEAD
-	cmd.PersistentFlags().StringVar(&publicURI, "public-uri", "https://dijets.ukwest.cloudapp.azure.com:443/", "URI for dijets network endpoints")
-=======
-	cmd.PersistentFlags().StringVar(&publicURI, "public-uri", "https://api.djtx-test.network", "URI for avalanche network endpoints")
->>>>>>> 099557feb13d84838ef69a92c36eff8311a123ac
+	cmd.PersistentFlags().StringVar(&publicURI, "public-uri", "https://dijets.ukwest.cloudapp.azure.com:443/", "URI for avalanche network endpoints")
 	cmd.PersistentFlags().StringVar(&privKeyPath, "private-key-path", ".subnet-cli.pk", "private key file path")
 	cmd.PersistentFlags().BoolVarP(&useLedger, "ledger", "l", false, "use ledger to sign transactions")
 
@@ -79,7 +76,7 @@ func wizardFunc(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	vmGenesisBytes, err := os.ReadFile(vmGenesisPath)
+	vmGenesisBytes, err := ioutil.ReadFile(vmGenesisPath)
 	if err != nil {
 		return err
 	}

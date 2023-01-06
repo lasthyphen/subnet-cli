@@ -12,6 +12,7 @@ import (
 
 	"github.com/lasthyphen/dijetsnodego/api/info"
 	"github.com/lasthyphen/dijetsnodego/ids"
+	"github.com/lasthyphen/dijetsnodego/utils/constants"
 	"github.com/lasthyphen/dijetsnodego/utils/units"
 	"github.com/dustin/go-humanize"
 	"github.com/olekukonko/tablewriter"
@@ -22,10 +23,6 @@ import (
 	"github.com/lasthyphen/subnet-cli/internal/key"
 	"github.com/lasthyphen/subnet-cli/pkg/color"
 	"github.com/lasthyphen/subnet-cli/pkg/logutil"
-)
-
-const (
-	Version = "0.0.3"
 )
 
 type ValInfo struct {
@@ -51,9 +48,9 @@ type Info struct {
 	subnetIDType string
 	subnetID     ids.ID
 
-	nodeIDs    []ids.NodeID
-	allNodeIDs []ids.NodeID
-	valInfos   map[ids.NodeID]*ValInfo
+	nodeIDs    []ids.ShortID
+	allNodeIDs []ids.ShortID
+	valInfos   map[ids.ShortID]*ValInfo
 
 	blockchainID  ids.ID
 	chainName     string
@@ -89,7 +86,7 @@ func InitClient(uri string, loadKey bool) (client.Client, *Info, error) {
 		uri:         uri,
 		feeData:     txFee,
 		networkName: networkName,
-		valInfos:    map[ids.NodeID]*ValInfo{},
+		valInfos:    map[ids.ShortID]*ValInfo{},
 	}
 	if !loadKey {
 		return cli, info, nil
@@ -179,10 +176,10 @@ func BaseTableSetup(i *Info) (*bytes.Buffer, *tablewriter.Table) {
 func ParseNodeIDs(cli client.Client, i *Info) error {
 	// TODO: make this parsing logic more explicit (+ store per subnetID, not
 	// just whatever was called last)
-	i.nodeIDs = []ids.NodeID{}
-	i.allNodeIDs = make([]ids.NodeID, len(nodeIDs))
+	i.nodeIDs = []ids.ShortID{}
+	i.allNodeIDs = make([]ids.ShortID, len(nodeIDs))
 	for idx, rnodeID := range nodeIDs {
-		nodeID, err := ids.NodeIDFromString(rnodeID)
+		nodeID, err := ids.ShortFromPrefixedString(rnodeID, constants.NodeIDPrefix)
 		if err != nil {
 			return err
 		}
@@ -202,7 +199,7 @@ func ParseNodeIDs(cli client.Client, i *Info) error {
 	return nil
 }
 
-func WaitValidator(cli client.Client, nodeIDs []ids.NodeID, i *Info) {
+func WaitValidator(cli client.Client, nodeIDs []ids.ShortID, i *Info) {
 	for _, nodeID := range nodeIDs {
 		color.Outf("{{yellow}}waiting for validator %s to start validating %s...(could take a few minutes){{/}}\n", nodeID, i.subnetID)
 		for {

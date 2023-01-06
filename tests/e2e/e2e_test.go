@@ -10,14 +10,14 @@ import (
 	"testing"
 	"time"
 
-	runner_client "github.com/lasthyphen/dijetsnode-go-runner/client"
 	"github.com/lasthyphen/dijetsnodego/ids"
-	"github.com/lasthyphen/dijetsnodego/utils/logging"
+	"github.com/lasthyphen/dijetsnodego/utils/constants"
 	"github.com/lasthyphen/dijetsnodego/utils/units"
 	"github.com/lasthyphen/subnet-cli/client"
 	"github.com/lasthyphen/subnet-cli/internal/key"
 	"github.com/lasthyphen/subnet-cli/pkg/color"
 	"github.com/lasthyphen/subnet-cli/pkg/logutil"
+	runner_client "github.com/gyuho/djtx-tester/client"
 	ginkgo "github.com/onsi/ginkgo/v2"
 	"github.com/onsi/gomega"
 )
@@ -70,9 +70,10 @@ var (
 var _ = ginkgo.BeforeSuite(func() {
 	var err error
 	runnerClient, err = runner_client.New(runner_client.Config{
+		LogLevel:    logLevel,
 		Endpoint:    gRPCEp,
 		DialTimeout: 10 * time.Second,
-	}, logging.NoLog{})
+	})
 	gomega.Ω(err).Should(gomega.BeNil())
 
 	// TODO: pass subnet whitelisting
@@ -82,6 +83,9 @@ var _ = ginkgo.BeforeSuite(func() {
 	cancel()
 	gomega.Ω(err).Should(gomega.BeNil())
 
+	// start is async, so wait some time for cluster health
+	color.Outf("{{green}}waiting for healthy{{/}}\n")
+	time.Sleep(time.Minute)
 	ctx, cancel = context.WithTimeout(context.Background(), 2*time.Minute)
 	_, err = runnerClient.Health(ctx)
 	cancel()
@@ -151,7 +155,9 @@ var _ = ginkgo.Describe("[CreateSubnet/CreateBlockchain]", func() {
 	})
 
 	ginkgo.It("can add subnet/validators", func() {
-		nodeID, _, err := cli.Info().Client().GetNodeID(context.Background())
+		nodeIDs, err := cli.Info().Client().GetNodeID(context.Background())
+		gomega.Ω(err).Should(gomega.BeNil())
+		nodeID, err := ids.ShortFromPrefixedString(nodeIDs, constants.NodeIDPrefix)
 		gomega.Ω(err).Should(gomega.BeNil())
 
 		ginkgo.By("fails when subnet ID is empty", func() {
@@ -175,7 +181,7 @@ var _ = ginkgo.Describe("[CreateSubnet/CreateBlockchain]", func() {
 				ctx,
 				k,
 				subnetID,
-				ids.EmptyNodeID,
+				ids.ShortEmpty,
 				time.Now(),
 				time.Now(),
 				1000,
@@ -190,7 +196,7 @@ var _ = ginkgo.Describe("[CreateSubnet/CreateBlockchain]", func() {
 				ctx,
 				k,
 				subnetID,
-				ids.GenerateTestNodeID(),
+				ids.GenerateTestShortID(),
 				time.Now().Add(30*time.Second),
 				time.Now().Add(2*24*time.Hour),
 				1000,

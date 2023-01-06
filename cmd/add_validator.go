@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/lasthyphen/dijetsnodego/ids"
-	"github.com/lasthyphen/dijetsnodego/utils/formatting/address"
+	"github.com/lasthyphen/dijetsnodego/utils/constants"
 	"github.com/lasthyphen/dijetsnodego/utils/units"
 	"github.com/lasthyphen/subnet-cli/client"
 	"github.com/lasthyphen/subnet-cli/pkg/color"
@@ -86,7 +86,7 @@ func createValidatorFunc(cmd *cobra.Command, args []string) error {
 	}
 
 	if rewardAddrs != "" {
-		info.rewardAddr, err = address.ParseToID(rewardAddrs)
+		info.rewardAddr, err = ids.ShortFromPrefixedString(rewardAddrs, constants.NodeIDPrefix)
 		if err != nil {
 			return err
 		}
@@ -94,7 +94,7 @@ func createValidatorFunc(cmd *cobra.Command, args []string) error {
 		info.rewardAddr = info.key.Addresses()[0]
 	}
 	if changeAddrs != "" {
-		info.changeAddr, err = address.ParseToID(changeAddrs)
+		info.changeAddr, err = ids.ShortFromPrefixedString(changeAddrs, constants.NodeIDPrefix)
 		if err != nil {
 			return err
 		}
