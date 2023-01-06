@@ -9,7 +9,7 @@ import (
 
 	"github.com/lasthyphen/dijetsnodego/ids"
 	"github.com/lasthyphen/dijetsnodego/utils/constants"
-	"github.com/lasthyphen/dijetsnodego/vms/components/avax"
+	"github.com/lasthyphen/dijetsnodego/vms/components/djtx"
 	"github.com/lasthyphen/dijetsnodego/vms/platformvm"
 )
 
@@ -30,9 +30,9 @@ type Key interface {
 	// If target amount is specified, it only uses the
 	// outputs until the total spending is below the target
 	// amount.
-	Spends(outputs []*avax.UTXO, opts ...OpOption) (
+	Spends(outputs []*djtx.UTXO, opts ...OpOption) (
 		totalBalanceToSpend uint64,
-		inputs []*avax.TransferableInput,
+		inputs []*djtx.TransferableInput,
 	)
 	// Sign generates [numSigs] signatures and attaches them to [pTx].
 	Sign(pTx *platformvm.Tx, numSigs int) error
@@ -65,7 +65,7 @@ func WithTargetAmount(ta uint64) OpOption {
 }
 
 // To deduct transfer fee from total spend (output).
-// e.g., "units.MilliAvax" for X/P-Chain transfer.
+// e.g., "units.MilliDjtx" for X/P-Chain transfer.
 func WithFeeDeduct(fee uint64) OpOption {
 	return func(op *Op) {
 		op.feeDeduct = fee

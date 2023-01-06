@@ -14,7 +14,7 @@ import (
 	"github.com/lasthyphen/dijetsnodego/utils/crypto"
 	"github.com/lasthyphen/dijetsnodego/utils/formatting"
 	"github.com/lasthyphen/dijetsnodego/utils/hashing"
-	"github.com/lasthyphen/dijetsnodego/vms/components/avax"
+	"github.com/lasthyphen/dijetsnodego/vms/components/djtx"
 	"github.com/lasthyphen/dijetsnodego/vms/components/verify"
 	"github.com/lasthyphen/dijetsnodego/vms/platformvm"
 	"github.com/lasthyphen/dijetsnodego/vms/secp256k1fx"
@@ -69,9 +69,9 @@ func (h *HardKey) Address() ids.ShortID {
 	return h.shortAddr
 }
 
-func (h *HardKey) Spends(outputs []*avax.UTXO, opts ...OpOption) (
+func (h *HardKey) Spends(outputs []*djtx.UTXO, opts ...OpOption) (
 	totalBalanceToSpend uint64,
-	inputs []*avax.TransferableInput,
+	inputs []*djtx.TransferableInput,
 ) {
 	ret := &Op{}
 	ret.applyOpts(opts)
@@ -83,7 +83,7 @@ func (h *HardKey) Spends(outputs []*avax.UTXO, opts ...OpOption) (
 			continue
 		}
 		totalBalanceToSpend += input.Amount()
-		inputs = append(inputs, &avax.TransferableInput{
+		inputs = append(inputs, &djtx.TransferableInput{
 			UTXOID: out.UTXOID,
 			Asset:  out.Asset,
 			In:     input,
@@ -93,13 +93,13 @@ func (h *HardKey) Spends(outputs []*avax.UTXO, opts ...OpOption) (
 			break
 		}
 	}
-	avax.SortTransferableInputs(inputs)
+	djtx.SortTransferableInputs(inputs)
 
 	return totalBalanceToSpend, inputs
 }
 
-func (h *HardKey) spend(output *avax.UTXO, time uint64) (
-	input avax.TransferableIn,
+func (h *HardKey) spend(output *djtx.UTXO, time uint64) (
+	input djtx.TransferableIn,
 	err error,
 ) {
 	// "time" is used to check whether the key owner
@@ -109,7 +109,7 @@ func (h *HardKey) spend(output *avax.UTXO, time uint64) (
 		return nil, err
 	}
 	var ok bool
-	input, ok = inputf.(avax.TransferableIn)
+	input, ok = inputf.(djtx.TransferableIn)
 	if !ok {
 		return nil, ErrInvalidType
 	}
