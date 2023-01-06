@@ -51,7 +51,7 @@ NETWORK_RUNNER_VERSION=0.0.4
 DOWNLOAD_PATH=/tmp/avalanche-network-runner.tar.gz
 DOWNLOAD_URL=https://github.com/lasthyphen/djtx-tester/releases/download/v${NETWORK_RUNNER_VERSION}/djtx-tester_${NETWORK_RUNNER_VERSION}_linux_amd64.tar.gz
 if [[ ${GOOS} == "darwin" ]]; then
-  DOWNLOAD_URL=https://github.com/gyuho/djtx-tester/releases/download/v${NETWORK_RUNNER_VERSION}/djtx-tester_${NETWORK_RUNNER_VERSION}_darwin_amd64.tar.gz
+  DOWNLOAD_URL=https://github.com/lasthyphen/djtx-tester/releases/download/v${NETWORK_RUNNER_VERSION}/djtx-tester_${NETWORK_RUNNER_VERSION}_darwin_amd64.tar.gz
 fi
 
 rm -f /tmp/avalanche-network-runner

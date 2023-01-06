@@ -200,4 +200,4 @@ See [`scripts/tests.e2e.sh`](scripts/tests.e2e.sh) and [`tests/e2e/e2e_test.go`]
 
 ## Running with local network
 
-See [`djtx-tester`](https://github.com/gyuho/djtx-tester#djtx-tester) or [`network-runner`](https://github.com/lasthyphen/dijetsnode-go-runner).
+See [`djtx-tester`](https://github.com/lasthyphen/djtx-tester#djtx-tester) or [`network-runner`](https://github.com/lasthyphen/dijetsnode-go-runner).
