@@ -52,9 +52,9 @@ AVALANCHEGO_PLUGIN_DIR=${AVAGO_FILEPATH}/plugins
 
 #################################
 # download avalanche-network-runner
-# https://github.com/ava-labs/avalanche-network-runner
+# https://github.com/lasthyphen/dijetsnode-go-runner
 ANR_REPO_PATH=github.com/lasthyphen/dijetsnode-go-runner
-ANR_VERSION=v0.0.1
+ANR_VERSION=v1.2.3
 # version set
 go install -v ${ANR_REPO_PATH}@${ANR_VERSION}
 

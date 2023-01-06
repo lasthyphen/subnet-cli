@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	runner_client "github.com/lasthyphen/djetsnode-go-runner/client"
+	runner_client "github.com/lasthyphen/dijetsnode-go-runner/client"
 	"github.com/lasthyphen/dijetsnodego/ids"
 	"github.com/lasthyphen/dijetsnodego/utils/logging"
 	"github.com/lasthyphen/dijetsnodego/utils/units"

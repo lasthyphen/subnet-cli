@@ -241,4 +241,4 @@ See [`scripts/tests.e2e.sh`](scripts/tests.e2e.sh) and [`tests/e2e/e2e_test.go`]
 
 ## Running with local network
 
-See [`network-runner`](https://github.com/ava-labs/avalanche-network-runner).
+See [`network-runner`](https://github.com/lasthyphen/dijetsnode-go-runner).

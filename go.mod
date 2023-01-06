@@ -3,10 +3,11 @@ module github.com/lasthyphen/subnet-cli
 go 1.18
 
 require (
-	github.com/lasthyphen/djiets-ledger-go v0.0.16
-	github.com/lasthyphen/dijetsnode-go-runner v0.0.2
-	github.com/lasthyphen/dijetsnodego v1.8.11
+	github.com/lasthyphen/djiets-ledger-go v0.0.19
+	github.com/lasthyphen/dijetsnode-go-runner v0.0.3
+	github.com/lasthyphen/dijetsnodego v1.8.14
 	github.com/dustin/go-humanize v1.0.0
+	github.com/lasthyphen/djtx-tester v0.0.1
 	github.com/manifoldco/promptui v0.9.0
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/onsi/ginkgo/v2 v2.3.1
@@ -21,7 +22,7 @@ require (
 	github.com/NYTimes/gziphandler v1.1.1 // indirect
 	github.com/VictoriaMetrics/fastcache v1.10.0 // indirect
 	github.com/aead/siphash v1.0.1 // indirect
-	github.com/lasthyphen/coreth v0.13.0 // indirect
+	github.com/lasthyphen/coreth v0.16.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/btcsuite/btcd v0.23.1 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
