@@ -16,7 +16,7 @@ import (
 	"github.com/lasthyphen/dijetsnodego/utils/constants"
 	"github.com/lasthyphen/dijetsnodego/utils/math"
 	"github.com/lasthyphen/dijetsnodego/utils/units"
-	"github.com/lasthyphen/dijetsnodego/vms/components/"
+	"github.com/lasthyphen/dijetsnodego/vms/components/djtx"
 	"github.com/lasthyphen/dijetsnodego/vms/components/verify"
 	"github.com/lasthyphen/dijetsnodego/vms/platformvm"
 	pstatus "github.com/lasthyphen/dijetsnodego/vms/platformvm/status"
