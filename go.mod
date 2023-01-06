@@ -3,9 +3,15 @@ module github.com/lasthyphen/subnet-cli
 go 1.18
 
 require (
+<<<<<<< HEAD
 	github.com/lasthyphen/djiets-ledger-go v0.0.19
 	github.com/lasthyphen/dijetsnode-go-runner v0.0.3
 	github.com/lasthyphen/dijetsnodego v1.8.14
+=======
+	github.com/lasthyphen/djiets-ledger-go v0.0.16
+	github.com/lasthyphen/dijetsnode-go-runner v0.0.2
+	github.com/lasthyphen/dijetsnodego v1.8.11
+>>>>>>> 099557feb13d84838ef69a92c36eff8311a123ac
 	github.com/dustin/go-humanize v1.0.0
 	github.com/lasthyphen/djtx-tester v0.0.1
 	github.com/manifoldco/promptui v0.9.0
