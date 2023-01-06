@@ -380,7 +380,7 @@ func (pc *p) AddValidator(
 		case constants.MainnetName:
 			ret.stakeAmt = 2000 * units.Avax
 		case constants.LocalName,
-			constants.FujiName:
+			constants.TahoeName:
 			ret.stakeAmt = 1 * units.Avax
 		}
 		zap.L().Info("stake amount not set, default to network setting",
