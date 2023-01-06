@@ -93,9 +93,7 @@ func createSubnetFunc(cmd *cobra.Command, args []string) error {
 	info.requiredBalance = 0
 	info.stakeAmount = 0
 	info.txFee = 0
-	ctx, cancel = context.WithTimeout(context.Background(), requestTimeout)
-	info.balance, err = cli.P().Balance(ctx, info.key)
-	cancel()
+	info.balance, err = cli.P().Balance(context.Background(), info.key)
 	if err != nil {
 		return err
 	}

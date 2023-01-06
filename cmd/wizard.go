@@ -31,7 +31,7 @@ func WizardCommand() *cobra.Command {
 	}
 
 	// "create subnet"
-	cmd.PersistentFlags().StringVar(&publicURI, "public-uri", "https://dijets.ukwest.cloudapp.azure.com:443/", "URI for avalanche network endpoints")
+	cmd.PersistentFlags().StringVar(&publicURI, "public-uri", "https://api.avax-test.network", "URI for avalanche network endpoints")
 	cmd.PersistentFlags().StringVar(&privKeyPath, "private-key-path", ".subnet-cli.pk", "private key file path")
 	cmd.PersistentFlags().BoolVarP(&useLedger, "ledger", "l", false, "use ledger to sign transactions")
 
@@ -70,8 +70,8 @@ func wizardFunc(cmd *cobra.Command, args []string) error {
 	}
 	info.validateWeight = defaultValidateWeight
 	info.validateRewardFeePercent = defaultValFeePercent
-	info.rewardAddr = info.key.Addresses()[0]
-	info.changeAddr = info.key.Addresses()[0]
+	info.rewardAddr = info.key.Address()
+	info.changeAddr = info.key.Address()
 	info.vmID, err = ids.FromString(vmIDs)
 	if err != nil {
 		return err
@@ -84,7 +84,7 @@ func wizardFunc(cmd *cobra.Command, args []string) error {
 	info.vmGenesisPath = vmGenesisPath
 
 	// Compute dry run cost/actions for approval
-	info.totalStakeAmount = uint64(len(info.nodeIDs)) * info.stakeAmount
+	info.stakeAmount = uint64(len(info.nodeIDs)) * defaultStakeAmount
 	info.txFee = uint64(info.feeData.CreateSubnetTxFee) + uint64(info.feeData.TxFee)*uint64(len(info.allNodeIDs)) + uint64(info.feeData.CreateBlockchainTxFee)
 	info.requiredBalance = info.stakeAmount + info.txFee
 	if err := info.CheckBalance(); err != nil {
@@ -223,11 +223,8 @@ func wizardFunc(cmd *cobra.Command, args []string) error {
 	// Print out summary of actions (subnetID, chainID, validator periods)
 	info.requiredBalance = 0
 	info.stakeAmount = 0
-	info.totalStakeAmount = 0
 	info.txFee = 0
-	ctx, cancel = context.WithTimeout(context.Background(), requestTimeout)
-	info.balance, err = cli.P().Balance(ctx, info.key)
-	cancel()
+	info.balance, err = cli.P().Balance(context.Background(), info.key)
 	if err != nil {
 		return err
 	}
@@ -240,9 +237,9 @@ func CreateSpellPreTable(i *Info) string {
 	if len(i.nodeIDs) > 0 {
 		tb.Append([]string{formatter.F("{{magenta}}NEW PRIMARY NETWORK VALIDATORS{{/}}"), formatter.F("{{light-gray}}{{bold}}%v{{/}}", i.nodeIDs)})
 		tb.Append([]string{formatter.F("{{magenta}}VALIDATE END{{/}}"), formatter.F("{{light-gray}}{{bold}}%s{{/}}", i.validateEnd.Format(time.RFC3339))})
-		stakeAmount := float64(i.stakeAmount) / float64(units.Djtx)
+		stakeAmount := float64(i.stakeAmount) / float64(units.Avax)
 		stakeAmounts := humanize.FormatFloat("#,###.###", stakeAmount)
-		tb.Append([]string{formatter.F("{{magenta}}STAKE AMOUNT{{/}}"), formatter.F("{{light-gray}}{{bold}}%s{{/}} $DJTX", stakeAmounts)})
+		tb.Append([]string{formatter.F("{{magenta}}STAKE AMOUNT{{/}}"), formatter.F("{{light-gray}}{{bold}}%s{{/}} $AVAX", stakeAmounts)})
 		validateRewardFeePercent := humanize.FormatFloat("#,###.###", float64(i.validateRewardFeePercent))
 		tb.Append([]string{formatter.F("{{magenta}}VALIDATE REWARD FEE{{/}}"), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} %%", validateRewardFeePercent)})
 		tb.Append([]string{formatter.F("{{cyan}}{{bold}}REWARD ADDRESS{{/}}"), formatter.F("{{light-gray}}%s{{/}}", i.rewardAddr)})

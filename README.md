@@ -1,6 +1,6 @@
 # subnet-cli
 
-A command-line interface to manage [Avalanche Subnets](https://docs.djtx.network/build/tutorials/platform/subnets).
+A command-line interface to manage [Avalanche Subnets](https://docs.avax.network/build/tutorials/platform/subnets).
 
 ## Install
 
@@ -37,14 +37,6 @@ Flags:
 Use "subnet-cli [command] --help" for more information about a command.
 ```
 
-## Ledger Support
-To use your [Ledger](https://www.ledger.com) with `subnet-cli`, just add the
-`-l`/`--ledger` flag to any command below.
-
-Make sure you've downloaded the latest version of the
-[Avalanche Ledger App](https://docs.djtx.network/learn/setup-your-ledger-nano-s-with-avalanche)
-first!
-
 ## Usage
 
 The following commands will walk you through creating a subnet on Fuji.
@@ -70,9 +62,9 @@ rest of this walkthrough.
 
 The easiest way to do this (**for testing only**) is:
 
-1) Import your private key (`.subnet-cli.pk`) into the [web wallet](https://wallet.djtx.network)
-2) Request funds from the [faucet](https://faucet.djtx-test.network)
-3) Move the test funds (sent on either the X or C-Chain) to the P-Chain [(Tutorial)](https://docs.djtx.network/build/tutorials/platform/transfer-djtx-between-x-chain-and-p-chain/)
+1) Import your private key (`.subnet-cli.pk`) into the [web wallet](https://wallet.avax.network)
+2) Request funds from the [faucet](https://faucet.avax-test.network)
+3) Move the test funds (sent on either the X or C-Chain) to the P-Chain [(Tutorial)](https://docs.avax.network/build/tutorials/platform/transfer-avax-between-x-chain-and-p-chain/)
 
 After following these 3 steps, your test key should now have a balance on the
 P-Chain.
@@ -121,7 +113,7 @@ subnet-cli create subnet \
 ```bash
 subnet-cli add validator \
 --node-ids="[YOUR-NODE-ID]" \
---stake-amount=[STAKE-AMOUNT-IN-NANO-DJTX] \
+--stake-amount=[STAKE-AMOUNT-IN-NANO-AVAX] \
 --validate-reward-fee-percent=2
 ```
 
@@ -200,3 +192,4 @@ See [`scripts/tests.e2e.sh`](scripts/tests.e2e.sh) and [`tests/e2e/e2e_test.go`]
 
 ## Running with local network
 
+See [`avax-tester`](https://github.com/gyuho/avax-tester#avax-tester) or [`network-runner`](https://github.com/ava-labs/avalanche-network-runner).

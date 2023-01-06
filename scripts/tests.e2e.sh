@@ -44,16 +44,6 @@ fi
 find /tmp/avalanchego-v${VERSION}
 
 #################################
-# download avalanche-network-runner
-# https://github.com/lasthyphen/dijetsnode-go-runner
-# TODO: migrate to upstream avalanche-network-runner
-
-echo "downloading avalanche-network-runner ${NETWORK_RUNNER_VERSION} at ${DOWNLOAD_URL}"
-curl -L ${DOWNLOAD_URL} -o ${DOWNLOAD_PATH}
-
-echo "extracting downloaded avalanchego"
-tar xzvf ${DOWNLOAD_PATH} -C /tmp
-/tmp/avalanche-network-runner -h
 
 #################################
 echo "building e2e.test"

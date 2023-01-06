@@ -89,20 +89,20 @@ func New(cfg Config) (Client, error) {
 	uriX := u.Scheme + "://" + u.Host
 	xChainName := cli.xChainID.String()
 	if u.Port() == "" {
-		// ref. https://docs.djtx.network/build/avalanchego-apis/x-chain
-		// e.g., https://api.djtx-test.network
+		// ref. https://docs.avax.network/build/avalanchego-apis/x-chain
+		// e.g., https://api.avax-test.network
 		xChainName = "X"
 	}
-	zap.L().Info("fetching DJTX asset id",
+	zap.L().Info("fetching AVAX asset id",
 		zap.String("uri", uriX),
 	)
 	xc := avm.NewClient(uriX, xChainName)
-	djtxDesc, err := xc.GetAssetDescription(context.TODO(), "DJTX")
+	avaxDesc, err := xc.GetAssetDescription(context.TODO(), "AVAX")
 	if err != nil {
 		return nil, err
 	}
-	cli.assetID = djtxDesc.AssetID
-	zap.L().Info("fetched DJTX asset id", zap.String("id", cli.assetID.String()))
+	cli.assetID = avaxDesc.AssetID
+	zap.L().Info("fetched AVAX asset id", zap.String("id", cli.assetID.String()))
 
 	zap.L().Info("fetching network information")
 	cli.networkName, err = cli.i.Client().GetNetworkName(context.TODO())
@@ -119,8 +119,8 @@ func New(cfg Config) (Client, error) {
 	)
 
 	// "NewClient" already appends "/ext/P"
-	// e.g., https://api.djtx-test.network
-	// ref. https://docs.djtx.network/build/avalanchego-apis/p-chain
+	// e.g., https://api.avax-test.network
+	// ref. https://docs.avax.network/build/avalanchego-apis/p-chain
 	uriP := u.Scheme + "://" + u.Host
 	pc := platformvm.NewClient(uriP)
 	cli.p = &p{

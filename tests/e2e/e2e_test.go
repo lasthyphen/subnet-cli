@@ -17,6 +17,7 @@ import (
 	"github.com/lasthyphen/subnet-cli/internal/key"
 	"github.com/lasthyphen/subnet-cli/pkg/color"
 	"github.com/lasthyphen/subnet-cli/pkg/logutil"
+	runner_client "github.com/gyuho/avax-tester/client"
 	ginkgo "github.com/onsi/ginkgo/v2"
 	"github.com/onsi/gomega"
 )
@@ -228,7 +229,7 @@ var _ = ginkgo.Describe("[CreateSubnet/CreateBlockchain]", func() {
 				nodeID,
 				time.Now().Add(30*time.Second),
 				time.Now().Add(5*24*time.Hour),
-				client.WithStakeAmount(2*units.KiloDjtx),
+				client.WithStakeAmount(2*units.KiloAvax),
 				// ref. "genesis/genesis_local.go".
 				client.WithRewardShares(30000), // 3%
 			)

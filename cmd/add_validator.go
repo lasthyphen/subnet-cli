@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	defaultStakeAmount   = 1 * units.Djtx
+	defaultStakeAmount   = 1 * units.Avax
 	defaultValFeePercent = 2
 	defaultStagger       = 2 * time.Hour
 	defaultValDuration   = 300 * 24 * time.Hour
@@ -46,7 +46,7 @@ $ subnet-cli add validator \
 	}
 
 	cmd.PersistentFlags().StringSliceVar(&nodeIDs, "node-ids", nil, "a list of node IDs (must be formatted in ids.ID)")
-	cmd.PersistentFlags().Uint64Var(&stakeAmount, "stake-amount", defaultStakeAmount, "stake amount denominated in nano DJTX (minimum amount that a validator must stake is 2,000 DJTX)")
+	cmd.PersistentFlags().Uint64Var(&stakeAmount, "stake-amount", defaultStakeAmount, "stake amount denominated in nano AVAX (minimum amount that a validator must stake is 2,000 AVAX)")
 
 	end := time.Now().Add(defaultValDuration)
 	cmd.PersistentFlags().StringVar(&validateEnds, "validate-end", end.Format(time.RFC3339), "validate start timestamp in RFC3339 format")
@@ -91,7 +91,7 @@ func createValidatorFunc(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	} else {
-		info.rewardAddr = info.key.Addresses()[0]
+		info.rewardAddr = info.key.Address()
 	}
 	if changeAddrs != "" {
 		info.changeAddr, err = ids.ShortFromPrefixedString(changeAddrs, constants.NodeIDPrefix)
@@ -99,7 +99,7 @@ func createValidatorFunc(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	} else {
-		info.changeAddr = info.key.Addresses()[0]
+		info.changeAddr = info.key.Address()
 	}
 	info.requiredBalance = info.stakeAmount * uint64(len(info.nodeIDs))
 	if err := info.CheckBalance(); err != nil {
@@ -159,9 +159,7 @@ func createValidatorFunc(cmd *cobra.Command, args []string) error {
 	info.requiredBalance = 0
 	info.stakeAmount = 0
 	info.txFee = 0
-	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
-	info.balance, err = cli.P().Balance(ctx, info.key)
-	cancel()
+	info.balance, err = cli.P().Balance(context.Background(), info.key)
 	if err != nil {
 		return err
 	}

@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/lasthyphen/dijetsnodego/api/info"
@@ -15,6 +16,7 @@ import (
 	"github.com/lasthyphen/dijetsnodego/utils/constants"
 	"github.com/lasthyphen/dijetsnodego/utils/units"
 	"github.com/dustin/go-humanize"
+	"github.com/manifoldco/promptui"
 	"github.com/olekukonko/tablewriter"
 	"github.com/onsi/ginkgo/v2/formatter"
 	"go.uber.org/zap"
@@ -36,10 +38,9 @@ type Info struct {
 	feeData *info.GetTxFeeResponse
 	balance uint64
 
-	txFee            uint64
-	stakeAmount      uint64
-	totalStakeAmount uint64
-	requiredBalance  uint64
+	txFee           uint64
+	stakeAmount     uint64
+	requiredBalance uint64
 
 	key key.Key
 
@@ -97,18 +98,45 @@ func InitClient(uri string, loadKey bool) (client.Client, *Info, error) {
 		if err != nil {
 			return nil, nil, err
 		}
-	} else {
-		info.key, err = key.NewHard(cli.NetworkID())
+		info.balance, err = cli.P().Balance(context.TODO(), info.key)
 		if err != nil {
 			return nil, nil, err
 		}
+		return cli, info, nil
 	}
 
-	info.balance, err = cli.P().Balance(context.TODO(), info.key)
-	if err != nil {
-		return nil, nil, err
+	for i := uint32(0); ; i++ {
+		hk, err := key.NewHard(cli.NetworkID(), i)
+		if err != nil {
+			return nil, nil, err
+		}
+		balance, err := cli.P().Balance(context.TODO(), hk)
+		if err != nil {
+			return nil, nil, err
+		}
+		curPChainDenominatedP := float64(balance) / float64(units.Avax)
+		curPChainDenominatedBalanceP := humanize.FormatFloat("#,###.#######", curPChainDenominatedP)
+		prompt := promptui.Select{
+			Label:  "\n",
+			Stdout: os.Stdout,
+			Items: []string{
+				formatter.F("{{green}}Continue with %s (%s AVAX){{/}}", hk.P(), curPChainDenominatedBalanceP),
+				formatter.F("{{red}}Try next address (idx=%d){{/}}", i+1),
+			},
+		}
+		idx, _, err := prompt.Run()
+		if err != nil {
+			return nil, nil, err
+		}
+		if idx == 0 {
+			info.key = hk
+			info.balance = balance
+			return cli, info, nil
+		}
+		if err := hk.Disconnect(); err != nil {
+			return nil, nil, err
+		}
 	}
-	return cli, info, nil
 }
 
 func CreateLogger() error {
@@ -124,15 +152,15 @@ func CreateLogger() error {
 
 func (i *Info) CheckBalance() error {
 	if i.balance < i.requiredBalance {
-		color.Outf("{{red}}insufficient funds to perform operation. get more at https://faucet.djtx-test.network{{/}}\n")
+		color.Outf("{{red}}insufficient funds to perform operation. get more at https://faucet.avax-test.network{{/}}\n")
 		return fmt.Errorf("%w: on %s (expected=%d, have=%d)", ErrInsufficientFunds, i.key.P(), i.requiredBalance, i.balance)
 	}
 	return nil
 }
 
 func BaseTableSetup(i *Info) (*bytes.Buffer, *tablewriter.Table) {
-	// P-Chain balance is denominated by units.Djtx or 10^9 nano-Djtx
-	curPChainDenominatedP := float64(i.balance) / float64(units.Djtx)
+	// P-Chain balance is denominated by units.Avax or 10^9 nano-Avax
+	curPChainDenominatedP := float64(i.balance) / float64(units.Avax)
 	curPChainDenominatedBalanceP := humanize.FormatFloat("#,###.#######", curPChainDenominatedP)
 
 	buf := bytes.NewBuffer(nil)
@@ -145,27 +173,22 @@ func BaseTableSetup(i *Info) (*bytes.Buffer, *tablewriter.Table) {
 	tb.SetRowLine(true)
 	tb.SetAlignment(tablewriter.ALIGN_LEFT)
 
-	tb.Append([]string{formatter.F("{{cyan}}{{bold}}PRIMARY P-CHAIN ADDRESS{{/}}"), formatter.F("{{light-gray}}{{bold}}%s{{/}}", i.key.P()[0])})
-	tb.Append([]string{formatter.F("{{coral}}{{bold}}TOTAL P-CHAIN BALANCE{{/}} "), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $DJTX", curPChainDenominatedBalanceP)})
+	tb.Append([]string{formatter.F("{{cyan}}{{bold}}P-CHAIN ADDRESS{{/}}"), formatter.F("{{light-gray}}{{bold}}%s{{/}}", i.key.P())})
+	tb.Append([]string{formatter.F("{{coral}}{{bold}}P-CHAIN BALANCE{{/}} "), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $AVAX", curPChainDenominatedBalanceP)})
 	if i.txFee > 0 {
-		txFee := float64(i.txFee) / float64(units.Djtx)
+		txFee := float64(i.txFee) / float64(units.Avax)
 		txFees := humanize.FormatFloat("#,###.###", txFee)
-		tb.Append([]string{formatter.F("{{red}}{{bold}}TX FEE{{/}}"), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $DJTX", txFees)})
+		tb.Append([]string{formatter.F("{{red}}{{bold}}TX FEE{{/}}"), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $AVAX", txFees)})
 	}
 	if i.stakeAmount > 0 {
-		stakeAmount := float64(i.stakeAmount) / float64(units.Djtx)
+		stakeAmount := float64(i.stakeAmount) / float64(units.Avax)
 		stakeAmounts := humanize.FormatFloat("#,###.###", stakeAmount)
-		tb.Append([]string{formatter.F("{{red}}{{bold}}EACH STAKE AMOUNT{{/}}"), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $DJTX", stakeAmounts)})
-	}
-	if i.totalStakeAmount > 0 {
-		totalStakeAmount := float64(i.totalStakeAmount) / float64(units.Djtx)
-		totalStakeAmounts := humanize.FormatFloat("#,###.###", totalStakeAmount)
-		tb.Append([]string{formatter.F("{{red}}{{bold}}TOTAL STAKE AMOUNT{{/}}"), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $DJTX", totalStakeAmounts)})
+		tb.Append([]string{formatter.F("{{red}}{{bold}}STAKE AMOUNT{{/}}"), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $AVAX", stakeAmounts)})
 	}
 	if i.requiredBalance > 0 {
-		requiredBalance := float64(i.requiredBalance) / float64(units.Djtx)
+		requiredBalance := float64(i.requiredBalance) / float64(units.Avax)
 		requiredBalances := humanize.FormatFloat("#,###.###", requiredBalance)
-		tb.Append([]string{formatter.F("{{red}}{{bold}}REQUIRED BALANCE{{/}}"), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $DJTX", requiredBalances)})
+		tb.Append([]string{formatter.F("{{red}}{{bold}}REQUIRED BALANCE{{/}}"), formatter.F("{{light-gray}}{{bold}}{{underline}}%s{{/}} $AVAX", requiredBalances)})
 	}
 
 	tb.Append([]string{formatter.F("{{orange}}URI{{/}}"), formatter.F("{{light-gray}}{{bold}}%s{{/}}", i.uri)})
